@@ -1,38 +1,32 @@
 import { useState } from 'react';
 import AbayaArt from './AbayaArt.jsx';
-import { HeartIcon } from './Icons.jsx';
 import { useCart } from '../context/CartContext.jsx';
-import { CURRENCY } from '../data/products.js';
+import { formatPrice } from '../data/products.js';
 
 export default function ProductCard({ product }) {
-  const { add, wishlist, toggleWish } = useCart();
+  const { add } = useCart();
   const [imgOk, setImgOk] = useState(Boolean(product.image));
-  const liked = wishlist.includes(product.id);
 
   return (
-    <article className="card">
-      <div className="card__media" style={{ background: product.accent }}>
-        {product.isNew && <span className="tag">جديد</span>}
-        <button
-          className={`card__wish ${liked ? 'is-liked' : ''}`}
-          onClick={() => toggleWish(product.id)}
-          aria-label={liked ? 'إزالة من المفضلة' : 'إضافة للمفضلة'}
-        >
-          <HeartIcon filled={liked} width={18} height={18} />
-        </button>
+    <article className={`card ${product.soldOut ? 'is-soldout' : ''}`}>
+      <div className="card__frame">
+      <a href="#" className="card__media" style={{ background: product.accent }} onClick={(e) => e.preventDefault()}>
+        {product.soldOut && <span className="badge-soldout">نفدت الكمية</span>}
         {imgOk ? (
           <img src={product.image} alt={product.name} onError={() => setImgOk(false)} />
         ) : (
-          <AbayaArt color={product.color} accent={product.accent} type={product.type} embroidery={product.id % 3 === 1} />
+          <AbayaArt color={product.color} accent={product.accent} type={product.type} embroidery={product.embroidery} />
         )}
-        <button className="card__add" onClick={() => add(product)}>أضيفي للسلة</button>
+      </a>
+      {!product.soldOut && (
+        <button className="card__add" onClick={() => add(product)} aria-label={`أضيفي ${product.name} للسلة`}>
+          + أضيفي للسلة
+        </button>
+      )}
       </div>
       <div className="card__body">
         <h3>{product.name}</h3>
-        <p className="price">
-          {product.price} {CURRENCY}
-          {product.oldPrice && <del>{product.oldPrice} {CURRENCY}</del>}
-        </p>
+        <p className="price">{formatPrice(product.price)}</p>
       </div>
     </article>
   );

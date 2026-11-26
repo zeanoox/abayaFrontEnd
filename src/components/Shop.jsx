@@ -1,69 +1,43 @@
 import { useEffect, useState } from 'react';
 import ProductCard from './ProductCard.jsx';
-import { fetchCategories, fetchProducts } from '../api.js';
+import { fetchProducts } from '../api.js';
+
+function Collection({ id, title, items, viewAll, cols = 4 }) {
+  if (!items.length) return null;
+  return (
+    <section className="collection" id={id}>
+      <div className="container">
+        <div className="collection__head">
+          <h2>{title}</h2>
+          {viewAll && <a href={`#${id}`} className="view-all">عرض الكل</a>}
+        </div>
+        <div className={`grid grid--${cols}`}>
+          {items.map((p) => <ProductCard key={p.id} product={p} />)}
+        </div>
+      </div>
+    </section>
+  );
+}
 
 export default function Shop() {
   const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [filter, setFilter] = useState('all');
-
-  useEffect(() => {
-    fetchProducts().then(setProducts);
-    fetchCategories().then(setCategories);
-  }, []);
-
-  const latest = products.filter((p) => p.isNew);
-  const shown = filter === 'all' ? products : products.filter((p) => p.category === filter);
+  useEffect(() => { fetchProducts().then(setProducts); }, []);
+  const by = (c) => products.filter((p) => p.category === c);
 
   return (
     <>
-      <section className="section">
-        <div className="container">
-          <div className="section__head">
-            <h2>أحدث التصاميم</h2>
-            <a href="#shop" className="link">عرض الكل</a>
-          </div>
-          <div className="grid grid--5">
-            {latest.map((p) => <ProductCard key={p.id} product={p} />)}
-          </div>
+      <section className="intro" id="new">
+        <div className="container intro__inner">
+          <h2>وصل حديثاً</h2>
+          <p>
+            في لوريم نصمم كل قطعة بخطوط نقية وتفاصيل مدروسة، لامرأة تبحث عن أناقة هادئة تدوم.
+          </p>
+          <p>تشكيلات يومية وملوّنة بأقمشة مريحة، تجمع بين الحشمة واللمسة العصرية.</p>
         </div>
       </section>
-
-      <section className="section section--tint" id="categories">
-        <div className="container">
-          <div className="section__head section__head--center">
-            <h2>تسوقي حسب الفئة</h2>
-          </div>
-          <div className="cats">
-            {categories.map((c) => (
-              <a href="#shop" key={c.id} className="cat" onClick={() => setFilter(c.id)}>
-                <span className="cat__arch" />
-                <strong>{c.name}</strong>
-                <small>{c.desc}</small>
-              </a>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="section" id="shop">
-        <div className="container">
-          <div className="section__head">
-            <h2>المتجر</h2>
-            <div className="chips" role="tablist">
-              <button className={`chip ${filter === 'all' ? 'is-active' : ''}`} onClick={() => setFilter('all')}>الكل</button>
-              {categories.map((c) => (
-                <button key={c.id} className={`chip ${filter === c.id ? 'is-active' : ''}`} onClick={() => setFilter(c.id)}>
-                  {c.name}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="grid grid--4">
-            {shown.map((p) => <ProductCard key={p.id} product={p} />)}
-          </div>
-        </div>
-      </section>
+      <Collection id="colored" title="عبايات ملوّنة" items={by('colored')} cols={5} />
+      <Collection id="daily" title="عبايات يومية" items={by('daily')} cols={4} />
+      <Collection id="hijab" title="الطرح" items={by('hijab')} cols={6} viewAll />
     </>
   );
 }

@@ -23,7 +23,7 @@ Without it, the site uses the demo products in `src/data/products.js`.
 
 ```
 src/
-  components/  Header, Hero, Features, Shop, ProductCard, CartDrawer, Footer, Logo, Icons, AbayaArt
+  components/  Header, Hero (image banner), Shop (collections), ProductCard, CartDrawer, Footer, Logo, Icons, AbayaArt
   context/     CartContext (cart + wishlist, saved in localStorage)
   data/        demo catalogue
   api.js       fetches from the backend, falls back to demo data

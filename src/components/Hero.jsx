@@ -1,33 +1,30 @@
 import { useState } from 'react';
 import Logo from './Logo.jsx';
 import AbayaArt from './AbayaArt.jsx';
-import { ArrowLeft } from './Icons.jsx';
 
-// Drop a photo at public/images/hero.jpg and it will replace the illustration automatically.
+// Full-width image banner. Drop a photo at public/images/hero.jpg to replace the illustration.
 export default function Hero() {
   const [photo, setPhoto] = useState(true);
 
   return (
-    <section id="home" className="hero">
-      <div className="hero__arches" aria-hidden="true">
-        <span /><span /><span />
+    <section id="home" className="banner">
+      <div className="banner__media" aria-hidden="true">
+        {photo ? (
+          <img src="/images/hero.jpg" alt="" onError={() => setPhoto(false)} />
+        ) : (
+          <div className="banner__art">
+            <div className="banner__arches"><span /><span /><span /></div>
+            <AbayaArt color="#5f6146" accent="#e9e1cf" embroidery className="banner__figure banner__figure--a" />
+            <AbayaArt color="#b9a88c" accent="#f1ece3" className="banner__figure banner__figure--b" />
+          </div>
+        )}
       </div>
-      <div className="container hero__inner">
-        <div className="hero__text">
-          <Logo size="xl" />
-          <div className="ornament" aria-hidden="true"><span />✦<span /></div>
-          <h1 className="hero__tagline">أناقة تدوم .. بتفاصيلها</h1>
-          <a href="#shop" className="btn btn--outline">
-            تسوقي الآن <ArrowLeft />
-          </a>
-        </div>
-        <div className="hero__visual">
-          {photo ? (
-            <img src="/images/hero.jpg" alt="عباية لوريم" onError={() => setPhoto(false)} />
-          ) : (
-            <AbayaArt color="#5f6146" accent="#e9e1cf" embroidery className="hero__art" />
-          )}
-        </div>
+      <div className="banner__content">
+        <Logo size="xl" />
+        <div className="ornament" aria-hidden="true"><span />✦<span /></div>
+        <h1>مغطّاة بالأناقة</h1>
+        <p>أناقة تدوم .. بتفاصيلها</p>
+        <a href="#colored" className="btn btn--solid">تسوقي الآن</a>
       </div>
     </section>
   );

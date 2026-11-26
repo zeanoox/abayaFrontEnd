@@ -1,24 +1,51 @@
-// Demo catalogue — used until the backend API is connected (see src/api.js).
+// Demo catalogue — mirrors the section layout of the reference shop.
+// Used until the backend API is connected (see src/api.js).
 export const categories = [
-  { id: 'daily', name: 'عبايات يومية', desc: 'قصّات عملية بأناقة هادئة' },
-  { id: 'colored', name: 'عبايات ملوّنة', desc: 'ألوان ترابية ناعمة' },
-  { id: 'occasion', name: 'عبايات المناسبات', desc: 'تطريز وتفاصيل فاخرة' },
-  { id: 'hijab', name: 'الطُّرَح', desc: 'أقمشة خفيفة بألوان متناسقة' },
+  { id: 'colored', name: 'عبايات ملوّنة' },
+  { id: 'daily', name: 'عبايات يومية' },
+  { id: 'hijab', name: 'الطرح' },
 ];
+
+const C = {
+  olive: ['#5f6146', '#e9e4d8'],
+  sage: ['#8f9a7f', '#efece3'],
+  sand: ['#b9a88c', '#f1ece3'],
+  mocha: ['#6e5848', '#ede6db'],
+  black: ['#1f1e1c', '#e8e2d6'],
+  navy: ['#252b3d', '#e8e2d6'],
+  wine: ['#5b2430', '#ece3d8'],
+  beige: ['#d3c3a6', '#f3eee5'],
+  green: ['#3f4a34', '#e9e4d8'],
+};
+const mk = (id, name, category, price, [color, accent], extra = {}) => ({ id, name, category, price, color, accent, ...extra });
 
 export const products = [
-  { id: 1, name: 'عباية زيتون مطرّزة', category: 'occasion', price: 389, color: '#5f6146', accent: '#e9e1cf', isNew: true },
-  { id: 2, name: 'عباية رملية كلاسيك', category: 'daily', price: 259, color: '#b9a88c', accent: '#f3ede2', isNew: true },
-  { id: 3, name: 'عباية سوداء بكم واسع', category: 'daily', price: 229, color: '#1f1e1c', accent: '#cbb994', isNew: true },
-  { id: 4, name: 'عباية موكا بحزام', category: 'colored', price: 279, oldPrice: 319, color: '#6e5848', accent: '#efe6d8', isNew: true },
-  { id: 5, name: 'عباية مريمية ناعمة', category: 'colored', price: 269, color: '#8f9a7f', accent: '#f1efe5', isNew: true },
-  { id: 6, name: 'عباية كحلي دانتيل', category: 'occasion', price: 419, color: '#252b3d', accent: '#d8c9a8', isNew: false },
-  { id: 7, name: 'عباية بيج كتان', category: 'daily', price: 239, color: '#d3c3a6', accent: '#faf6ee', isNew: false },
-  { id: 8, name: 'عباية عنابي مخملية', category: 'colored', price: 339, color: '#5b2430', accent: '#e6cfc0', isNew: false },
-  { id: 9, name: 'طرحة شيفون – زيتي', category: 'hijab', price: 49, color: '#5f6146', accent: '#f3ede2', isNew: false, type: 'hijab' },
-  { id: 10, name: 'طرحة جيرسي – بيج', category: 'hijab', price: 45, color: '#cdbb9c', accent: '#faf6ee', isNew: false, type: 'hijab' },
-  { id: 11, name: 'طرحة دانتيل – أسود', category: 'hijab', price: 59, color: '#1f1e1c', accent: '#cbb994', isNew: false, type: 'hijab' },
-  { id: 12, name: 'طرحة حرير – موكا', category: 'hijab', price: 55, color: '#6e5848', accent: '#efe6d8', isNew: false, type: 'hijab' },
+  // عبايات ملوّنة (5)
+  mk(1, 'S3 – زيتي مطرّز', 'colored', 49.99, C.olive, { soldOut: true, embroidery: true }),
+  mk(2, 'S2 – مريمية', 'colored', 29.99, C.sage),
+  mk(3, 'S5 – موكا', 'colored', 44.99, C.mocha),
+  mk(4, 'S4 – عنابي', 'colored', 39.99, C.wine),
+  mk(5, 'S3 – رملي', 'colored', 49.99, C.sand),
+  // عبايات يومية (12)
+  mk(6, 'S13', 'daily', 64.99, C.black),
+  mk(7, 'S12', 'daily', 59.99, C.navy),
+  mk(8, 'S11', 'daily', 54.99, C.olive, { embroidery: true }),
+  mk(9, 'S10', 'daily', 49.99, C.beige),
+  mk(10, 'S7', 'daily', 59.99, C.black),
+  mk(11, 'S6', 'daily', 54.99, C.mocha),
+  mk(12, 'S1', 'daily', 49.99, C.green),
+  mk(13, 'S25', 'daily', 64.99, C.sand, { embroidery: true }),
+  mk(14, 'S8', 'daily', 54.99, C.black),
+  mk(15, 'S9', 'daily', 59.99, C.sage),
+  mk(16, 'S32', 'daily', 64.99, C.navy, { embroidery: true }),
+  mk(17, 'S26', 'daily', 59.99, C.beige),
+  // الطرح (6)
+  mk(18, 'طرحة – أسود', 'hijab', 4.99, C.black, { type: 'hijab' }),
+  mk(19, 'طرحة – كحلي', 'hijab', 4.99, C.navy, { type: 'hijab' }),
+  mk(20, 'طرحة – عنابي', 'hijab', 4.99, C.wine, { type: 'hijab' }),
+  mk(21, 'طرحة – أخضر داكن', 'hijab', 4.99, C.green, { type: 'hijab' }),
+  mk(22, 'طرحة – أخضر مريمي', 'hijab', 4.99, C.sage, { type: 'hijab' }),
+  mk(23, 'طرحة – بيج', 'hijab', 4.99, C.beige, { type: 'hijab' }),
 ];
 
-export const CURRENCY = 'ر.س';
+export const formatPrice = (n) => `€${n.toFixed(2).replace('.', ',')}`;

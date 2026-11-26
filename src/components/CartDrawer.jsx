@@ -1,7 +1,7 @@
 import AbayaArt from './AbayaArt.jsx';
 import { CloseIcon } from './Icons.jsx';
 import { useCart } from '../context/CartContext.jsx';
-import { CURRENCY } from '../data/products.js';
+import { formatPrice } from '../data/products.js';
 
 export default function CartDrawer() {
   const { items, open, setOpen, setQty, total } = useCart();
@@ -26,7 +26,7 @@ export default function CartDrawer() {
                 </div>
                 <div className="line__info">
                   <strong>{i.name}</strong>
-                  <span>{i.price} {CURRENCY}</span>
+                  <span>{formatPrice(i.price)}</span>
                   <div className="qty">
                     <button onClick={() => setQty(i.id, i.qty + 1)} aria-label="زيادة">+</button>
                     <span>{i.qty}</span>
@@ -39,7 +39,7 @@ export default function CartDrawer() {
         )}
 
         <div className="drawer__foot">
-          <div className="drawer__total"><span>المجموع</span><strong>{total} {CURRENCY}</strong></div>
+          <div className="drawer__total"><span>المجموع</span><strong>{formatPrice(total)}</strong></div>
           <button className="btn btn--solid" disabled={!items.length}>إتمام الطلب</button>
         </div>
       </aside>

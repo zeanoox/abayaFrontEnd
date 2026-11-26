@@ -1,65 +1,53 @@
-import Logo from './Logo.jsx';
-import { InstagramIcon, SnapIcon, TiktokIcon } from './Icons.jsx';
+import { useState } from 'react';
+import { InstagramIcon, TiktokIcon } from './Icons.jsx';
+
+const FacebookIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+    <path d="M14 8h3V4h-3a4 4 0 0 0-4 4v3H7v4h3v6h4v-6h3l1-4h-4V8z" />
+  </svg>
+);
 
 export default function Footer() {
+  const [sent, setSent] = useState(false);
   return (
-    <>
-      <section className="about" id="about">
-        <div className="container about__inner">
-          <h2>من لوريم</h2>
-          <p>
-            في لوريم نؤمن أن الأناقة الحقيقية تسكن في التفاصيل. نصمم عباياتنا بخطوط نقية وأقمشة مختارة بعناية،
-            لتمنحك حضوراً هادئاً وفخامة تدوم معك في كل مناسبة.
-          </p>
+    <footer className="footer" id="contact">
+      <div className="container footer__grid">
+        <div>
+          <h4>تسوقي</h4>
+          <a href="#home">الرئيسية</a>
+          <a href="#colored">عبايات ملوّنة</a>
+          <a href="#daily">الكتالوج</a>
+          <a href="#contact">تواصل معنا</a>
         </div>
-      </section>
-
-      <section className="newsletter">
-        <div className="container newsletter__inner">
-          <div>
-            <h3>انضمي لعالم لوريم</h3>
-            <p>كوني أول من يعرف عن التصاميم الجديدة والعروض الخاصة.</p>
-          </div>
-          <form onSubmit={(e) => e.preventDefault()}>
-            <input type="email" placeholder="بريدك الإلكتروني" required />
-            <button className="btn btn--solid" type="submit">اشتراك</button>
-          </form>
-        </div>
-      </section>
-
-      <footer className="footer" id="contact">
-        <div className="container footer__grid">
-          <div>
-            <Logo size="md" />
-            <p className="footer__tag">أناقة تدوم .. بتفاصيلها</p>
-            <div className="socials">
-              <a href="#" aria-label="Instagram"><InstagramIcon /></a>
-              <a href="#" aria-label="TikTok"><TiktokIcon /></a>
-              <a href="#" aria-label="Snapchat"><SnapIcon /></a>
-            </div>
-          </div>
-          <div>
-            <h4>تسوقي</h4>
-            <a href="#shop">عبايات يومية</a>
-            <a href="#shop">عبايات ملوّنة</a>
-            <a href="#shop">عبايات المناسبات</a>
-            <a href="#shop">الطُّرَح</a>
-          </div>
-          <div>
-            <h4>المساعدة</h4>
-            <a href="#">سياسة الشحن</a>
-            <a href="#">الاستبدال والاسترجاع</a>
-            <a href="#">دليل المقاسات</a>
-            <a href="#">الخصوصية</a>
-          </div>
-          <div>
-            <h4>تواصل معنا</h4>
-            <a href="mailto:hello@lorim.store">hello@lorim.store</a>
-            <a href="#">واتساب</a>
+        <div>
+          <h4>تابعينا</h4>
+          <div className="socials">
+            <a href="#" aria-label="Facebook"><FacebookIcon /></a>
+            <a href="#" aria-label="Instagram"><InstagramIcon /></a>
+            <a href="#" aria-label="TikTok"><TiktokIcon /></a>
           </div>
         </div>
-        <div className="footer__bottom">© {new Date().getFullYear()} LORIM. جميع الحقوق محفوظة.</div>
-      </footer>
-    </>
+        <div className="footer__news">
+          <h4>انضمي لمجتمعنا</h4>
+          {sent ? (
+            <p>شكراً لاشتراكك!</p>
+          ) : (
+            <form onSubmit={(e) => { e.preventDefault(); setSent(true); }}>
+              <input type="email" placeholder="البريد الإلكتروني" required />
+              <button type="submit" aria-label="اشتراك">←</button>
+            </form>
+          )}
+        </div>
+      </div>
+      <div className="container footer__bottom">
+        <span>© {new Date().getFullYear()} LORIM</span>
+        <nav>
+          <a href="#">سياسة الخصوصية</a>
+          <a href="#">سياسة الاسترجاع</a>
+          <a href="#">شروط الخدمة</a>
+          <a href="#">سياسة الشحن</a>
+        </nav>
+      </div>
+    </footer>
   );
 }

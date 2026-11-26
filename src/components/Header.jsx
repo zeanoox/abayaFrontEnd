@@ -5,8 +5,8 @@ import { useCart } from '../context/CartContext.jsx';
 
 const links = [
   { href: '#home', label: 'الرئيسية' },
-  { href: '#shop', label: 'المتجر' },
-  { href: '#about', label: 'من لوريم' },
+  { href: '#colored', label: 'عبايات ملوّنة' },
+  { href: '#daily', label: 'الكتالوج' },
   { href: '#contact', label: 'تواصل معنا' },
 ];
 
