@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import Logo from './Logo.jsx';
 import AbayaArt from './AbayaArt.jsx';
+import { useI18n } from '../i18n/I18nContext.jsx';
 
 // Full-width image banner. Drop a photo at public/images/hero.jpg to replace the illustration.
 export default function Hero() {
+  const { t } = useI18n();
   const [photo, setPhoto] = useState(true);
 
   return (
@@ -22,9 +24,9 @@ export default function Hero() {
       <div className="banner__content">
         <Logo size="xl" />
         <div className="ornament" aria-hidden="true"><span />✦<span /></div>
-        <h1>مغطّاة بالأناقة</h1>
-        <p>أناقة تدوم .. بتفاصيلها</p>
-        <a href="#colored" className="btn btn--solid">تسوقي الآن</a>
+        <h1>{t('hero.title')}</h1>
+        <p>{t('hero.subtitle')}</p>
+        <a href="#colored" className="btn btn--solid">{t('hero.cta')}</a>
       </div>
     </section>
   );

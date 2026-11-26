@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { InstagramIcon, TiktokIcon } from './Icons.jsx';
+import { useI18n } from '../i18n/I18nContext.jsx';
 
 const FacebookIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
@@ -8,19 +9,20 @@ const FacebookIcon = () => (
 );
 
 export default function Footer() {
+  const { t, dir } = useI18n();
   const [sent, setSent] = useState(false);
   return (
     <footer className="footer" id="contact">
       <div className="container footer__grid">
         <div>
-          <h4>تسوقي</h4>
-          <a href="#home">الرئيسية</a>
-          <a href="#colored">عبايات ملوّنة</a>
-          <a href="#daily">الكتالوج</a>
-          <a href="#contact">تواصل معنا</a>
+          <h4>{t('footer.shop')}</h4>
+          <a href="#home">{t('nav.home')}</a>
+          <a href="#colored">{t('nav.colored')}</a>
+          <a href="#daily">{t('nav.catalog')}</a>
+          <a href="#contact">{t('nav.contact')}</a>
         </div>
         <div>
-          <h4>تابعينا</h4>
+          <h4>{t('footer.connect')}</h4>
           <div className="socials">
             <a href="#" aria-label="Facebook"><FacebookIcon /></a>
             <a href="#" aria-label="Instagram"><InstagramIcon /></a>
@@ -28,13 +30,13 @@ export default function Footer() {
           </div>
         </div>
         <div className="footer__news">
-          <h4>انضمي لمجتمعنا</h4>
+          <h4>{t('footer.community')}</h4>
           {sent ? (
-            <p>شكراً لاشتراكك!</p>
+            <p>{t('footer.thanks')}</p>
           ) : (
             <form onSubmit={(e) => { e.preventDefault(); setSent(true); }}>
-              <input type="email" placeholder="البريد الإلكتروني" required />
-              <button type="submit" aria-label="اشتراك">←</button>
+              <input type="email" placeholder={t('footer.email')} aria-label={t('footer.email')} required />
+              <button type="submit" aria-label={t('footer.subscribe')}>{dir === 'rtl' ? '←' : '→'}</button>
             </form>
           )}
         </div>
@@ -42,10 +44,10 @@ export default function Footer() {
       <div className="container footer__bottom">
         <span>© {new Date().getFullYear()} LORIM</span>
         <nav>
-          <a href="#">سياسة الخصوصية</a>
-          <a href="#">سياسة الاسترجاع</a>
-          <a href="#">شروط الخدمة</a>
-          <a href="#">سياسة الشحن</a>
+          <a href="#">{t('footer.privacy')}</a>
+          <a href="#">{t('footer.refund')}</a>
+          <a href="#">{t('footer.terms')}</a>
+          <a href="#">{t('footer.shipping')}</a>
         </nav>
       </div>
     </footer>

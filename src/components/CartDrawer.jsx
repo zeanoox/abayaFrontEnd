@@ -1,22 +1,24 @@
 import AbayaArt from './AbayaArt.jsx';
 import { CloseIcon } from './Icons.jsx';
 import { useCart } from '../context/CartContext.jsx';
+import { useI18n } from '../i18n/I18nContext.jsx';
 import { formatPrice } from '../data/products.js';
 
 export default function CartDrawer() {
   const { items, open, setOpen, setQty, total } = useCart();
+  const { t, tr } = useI18n();
 
   return (
     <>
       <div className={`overlay ${open ? 'is-open' : ''}`} onClick={() => setOpen(false)} />
-      <aside className={`drawer ${open ? 'is-open' : ''}`} aria-label="سلة التسوق" aria-hidden={!open}>
+      <aside className={`drawer ${open ? 'is-open' : ''}`} aria-label={t('cart.title')} aria-hidden={!open}>
         <div className="drawer__head">
-          <h3>سلة التسوق</h3>
-          <button className="icon-btn" onClick={() => setOpen(false)} aria-label="إغلاق"><CloseIcon /></button>
+          <h3>{t('cart.title')}</h3>
+          <button className="icon-btn" onClick={() => setOpen(false)} aria-label={t('cart.close')}><CloseIcon /></button>
         </div>
 
         {items.length === 0 ? (
-          <p className="drawer__empty">سلتك فارغة حالياً</p>
+          <p className="drawer__empty">{t('cart.empty')}</p>
         ) : (
           <ul className="drawer__list">
             {items.map((i) => (
@@ -25,12 +27,12 @@ export default function CartDrawer() {
                   <AbayaArt color={i.color} accent={i.accent} type={i.type} />
                 </div>
                 <div className="line__info">
-                  <strong>{i.name}</strong>
-                  <span>{formatPrice(i.price)}</span>
+                  <strong>{tr(i.name)}</strong>
+                  <span className="price">{formatPrice(i.price)}</span>
                   <div className="qty">
-                    <button onClick={() => setQty(i.id, i.qty + 1)} aria-label="زيادة">+</button>
+                    <button onClick={() => setQty(i.id, i.qty - 1)} aria-label={t('cart.dec')}>−</button>
                     <span>{i.qty}</span>
-                    <button onClick={() => setQty(i.id, i.qty - 1)} aria-label="إنقاص">−</button>
+                    <button onClick={() => setQty(i.id, i.qty + 1)} aria-label={t('cart.inc')}>+</button>
                   </div>
                 </div>
               </li>
@@ -39,8 +41,8 @@ export default function CartDrawer() {
         )}
 
         <div className="drawer__foot">
-          <div className="drawer__total"><span>المجموع</span><strong>{formatPrice(total)}</strong></div>
-          <button className="btn btn--solid" disabled={!items.length}>إتمام الطلب</button>
+          <div className="drawer__total"><span>{t('cart.total')}</span><strong className="price">{formatPrice(total)}</strong></div>
+          <button className="btn btn--solid" disabled={!items.length}>{t('cart.checkout')}</button>
         </div>
       </aside>
     </>
