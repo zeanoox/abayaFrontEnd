@@ -1,50 +1,43 @@
-import AbayaArt from './AbayaArt.jsx';
-import { CloseIcon } from './Icons.jsx';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext.jsx';
 import { useI18n } from '../i18n/I18nContext.jsx';
-import { formatPrice } from '../data/products.js';
+import CartLines from './CartLines.jsx';
+import { Drawer, useErrorMessage } from './ui.jsx';
 
 export default function CartDrawer() {
-  const { items, open, setOpen, setQty, total } = useCart();
-  const { t, tr } = useI18n();
+  const { cart, open, setOpen } = useCart();
+  const { t, price } = useI18n();
+  const nav = useNavigate();
+  const errMsg = useErrorMessage();
+  const [err, setErr] = useState(null);
+  const lines = cart?.lines || [];
+  const close = () => setOpen(false);
+  const go = (to) => { close(); nav(to); };
+
+  // Distance to free shipping for the cheapest paid method.
+  const ship = cart?.shipping;
+  const away = ship?.freeOver && ship.price > 0 ? ship.freeOver - (cart.subtotal - cart.discount) : null;
 
   return (
-    <>
-      <div className={`overlay ${open ? 'is-open' : ''}`} onClick={() => setOpen(false)} />
-      <aside className={`drawer ${open ? 'is-open' : ''}`} aria-label={t('cart.title')} aria-hidden={!open}>
-        <div className="drawer__head">
-          <h3>{t('cart.title')}</h3>
-          <button className="icon-btn" onClick={() => setOpen(false)} aria-label={t('cart.close')}><CloseIcon /></button>
+    <Drawer open={open} onClose={close} title={t('cart.title')}
+      footer={lines.length > 0 && (
+        <>
+          {away > 0 && <p className="free-bar">{t('cart.awayFree', { amount: price(away) })}
+            <span style={{ '--p': `${Math.min(100, ((cart.subtotal - cart.discount) / ship.freeOver) * 100)}%` }} /></p>}
+          <div className="sum-row"><span>{t('cart.subtotal')}</span><strong>{price(cart.subtotal)}</strong></div>
+          {cart.discount > 0 && <div className="sum-row"><span>{t('cart.discount')}</span><span>−{price(cart.discount)}</span></div>}
+          <button className="btn btn--solid btn--block" onClick={() => go('/checkout')} disabled={!cart.canCheckout}>{t('cart.checkout')}</button>
+          <button className="btn btn--outline btn--block" onClick={() => go('/cart')}>{t('cart.view')}</button>
+        </>
+      )}>
+      {err && <p className="notice notice--err" role="alert">{errMsg(err)}</p>}
+      {lines.length === 0 ? (
+        <div className="state">
+          <p>{t('cart.empty')}</p>
+          <Link to="/shop" className="btn btn--outline" onClick={close}>{t('cart.continue')}</Link>
         </div>
-
-        {items.length === 0 ? (
-          <p className="drawer__empty">{t('cart.empty')}</p>
-        ) : (
-          <ul className="drawer__list">
-            {items.map((i) => (
-              <li key={i.id} className="line">
-                <div className="line__thumb" style={{ background: i.accent }}>
-                  <AbayaArt color={i.color} accent={i.accent} type={i.type} />
-                </div>
-                <div className="line__info">
-                  <strong>{tr(i.name)}</strong>
-                  <span className="price">{formatPrice(i.price)}</span>
-                  <div className="qty">
-                    <button onClick={() => setQty(i.id, i.qty - 1)} aria-label={t('cart.dec')}>−</button>
-                    <span>{i.qty}</span>
-                    <button onClick={() => setQty(i.id, i.qty + 1)} aria-label={t('cart.inc')}>+</button>
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-
-        <div className="drawer__foot">
-          <div className="drawer__total"><span>{t('cart.total')}</span><strong className="price">{formatPrice(total)}</strong></div>
-          <button className="btn btn--solid" disabled={!items.length}>{t('cart.checkout')}</button>
-        </div>
-      </aside>
-    </>
+      ) : <CartLines lines={lines} onError={setErr} />}
+    </Drawer>
   );
 }

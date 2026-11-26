@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { LANGS, translations } from './translations.js';
+import { money } from '../lib/format.js';
 
 const I18nContext = createContext(null);
 
@@ -7,7 +8,7 @@ function initialLang() {
   try {
     const saved = localStorage.getItem('lorim-lang');
     if (saved && translations[saved]) return saved;
-  } catch {}
+  } catch { /* storage unavailable */ }
   const nav = (navigator.language || '').slice(0, 2).toLowerCase();
   return translations[nav] ? nav : 'nl';
 }
@@ -19,15 +20,20 @@ export function I18nProvider({ children }) {
     const meta = LANGS.find((l) => l.code === lang);
     document.documentElement.lang = lang;
     document.documentElement.dir = meta.dir;
-    document.title = translations[lang]['meta.title'];
-    try { localStorage.setItem('lorim-lang', lang); } catch {}
+    try { localStorage.setItem('lorim-lang', lang); } catch { /* ignore */ }
   }, [lang]);
 
   const value = useMemo(() => {
-    const t = (key) => translations[lang][key] ?? translations.en[key] ?? key;
-    // Pick the right language from a { nl, en, ar } object (or return a plain string as-is).
-    const tr = (field) => (field && typeof field === 'object' ? field[lang] ?? field.en : field);
-    return { lang, setLang, t, tr, dir: LANGS.find((l) => l.code === lang).dir };
+    /** t('key', { n: 3 }) — looks up a string and fills {placeholders}. */
+    const t = (key, vars) => {
+      let s = translations[lang][key] ?? translations.en[key] ?? key;
+      if (vars) for (const [k, v] of Object.entries(vars)) s = s.replaceAll(`{${k}}`, v);
+      return s;
+    };
+    /** Picks the active language from a { nl, en, ar } object coming from the API. */
+    const tr = (field) => (field && typeof field === 'object' ? field[lang] ?? field.en ?? '' : field ?? '');
+    const price = (cents) => money(cents, lang);
+    return { lang, setLang, t, tr, price, dir: LANGS.find((l) => l.code === lang).dir };
   }, [lang]);
 
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;

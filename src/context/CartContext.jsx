@@ -1,45 +1,83 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { api } from '../api.js';
 
+// The cart lives on the server; the browser only keeps a random token so it survives refreshes and return visits.
 const CartContext = createContext(null);
+const KEY = 'lorim-cart-token';
 
-function load(key, fallback) {
-  try {
-    const v = localStorage.getItem(key);
-    return v ? JSON.parse(v) : fallback;
-  } catch {
-    return fallback;
-  }
-}
+const readToken = () => { try { return localStorage.getItem(KEY); } catch { return null; } };
+const writeToken = (v) => { try { v ? localStorage.setItem(KEY, v) : localStorage.removeItem(KEY); } catch { /* ignore */ } };
 
 export function CartProvider({ children }) {
-  const [items, setItems] = useState(() => load('lorim-cart', []));
-  const [wishlist, setWishlist] = useState(() => load('lorim-wishlist', []));
+  const [cart, setCart] = useState(null);
   const [open, setOpen] = useState(false);
+  const [error, setError] = useState(null);
+  const [opts, setOpts] = useState({ country: 'NL', shipping: undefined });
+  const tokenRef = useRef(readToken());
+  const optsRef = useRef(opts);
+  optsRef.current = opts;
 
-  useEffect(() => {
-    try { localStorage.setItem('lorim-cart', JSON.stringify(items)); } catch {}
-  }, [items]);
-  useEffect(() => {
-    try { localStorage.setItem('lorim-wishlist', JSON.stringify(wishlist)); } catch {}
-  }, [wishlist]);
+  const query = () => {
+    const o = optsRef.current;
+    return `?country=${o.country}${o.shipping ? `&shipping=${encodeURIComponent(o.shipping)}` : ''}`;
+  };
 
-  const value = useMemo(() => {
-    const add = (product) => {
-      setItems((prev) => {
-        const found = prev.find((i) => i.id === product.id);
-        if (found) return prev.map((i) => (i.id === product.id ? { ...i, qty: i.qty + 1 } : i));
-        return [...prev, { ...product, qty: 1 }];
-      });
+  const ensureToken = useCallback(async () => {
+    if (tokenRef.current) return tokenRef.current;
+    const c = await api(`/cart${query()}`, { method: 'POST' });
+    tokenRef.current = c.token;
+    writeToken(c.token);
+    setCart(c);
+    return c.token;
+  }, []);
+
+  /** Runs a cart request; recreates the cart once if the stored token is unknown (e.g. expired). */
+  const call = useCallback(async (path, init = {}) => {
+    const run = async () => api(`${path}${query()}`, { ...init, cartToken: await ensureToken() });
+    try {
+      const c = await run();
+      setCart(c);
+      setError(null);
+      return c;
+    } catch (err) {
+      if (err.status === 404 && err.body?.message === 'Cart not found') {
+        tokenRef.current = null;
+        writeToken(null);
+        const c = await run();
+        setCart(c);
+        return c;
+      }
+      throw err;
+    }
+  }, [ensureToken]);
+
+  const refresh = useCallback(async () => {
+    if (!tokenRef.current) { setCart(null); return null; }
+    try { return await call('/cart'); } catch (err) { setError(err); return null; }
+  }, [call]);
+
+  useEffect(() => { refresh(); }, [refresh, opts]);
+
+  const value = useMemo(() => ({
+    cart,
+    error,
+    open,
+    setOpen,
+    count: cart?.itemCount || 0,
+    token: () => tokenRef.current,
+    country: opts.country,
+    setShippingOptions: (o) => setOpts((p) => ({ ...p, ...o })),
+    refresh,
+    add: async (variantId, quantity = 1) => {
+      const c = await call('/cart/items', { method: 'POST', body: { variantId, quantity } });
       setOpen(true);
-    };
-    const setQty = (id, qty) =>
-      setItems((prev) => (qty <= 0 ? prev.filter((i) => i.id !== id) : prev.map((i) => (i.id === id ? { ...i, qty } : i))));
-    const toggleWish = (id) =>
-      setWishlist((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
-    const count = items.reduce((s, i) => s + i.qty, 0);
-    const total = items.reduce((s, i) => s + i.qty * i.price, 0);
-    return { items, add, setQty, count, total, open, setOpen, wishlist, toggleWish };
-  }, [items, wishlist, open]);
+      return c;
+    },
+    setQty: (itemId, quantity) => call(`/cart/items/${itemId}`, { method: 'PATCH', body: { quantity } }),
+    remove: (itemId) => call(`/cart/items/${itemId}`, { method: 'DELETE' }),
+    applyCoupon: (code) => call('/cart/coupon', { method: 'POST', body: { code } }),
+    removeCoupon: () => call('/cart/coupon', { method: 'DELETE' }),
+  }), [cart, error, open, opts.country, refresh, call]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

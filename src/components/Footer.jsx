@@ -1,53 +1,81 @@
 import { useState } from 'react';
-import { InstagramIcon, TiktokIcon } from './Icons.jsx';
+import { Link } from 'react-router-dom';
+import { api } from '../api.js';
 import { useI18n } from '../i18n/I18nContext.jsx';
-
-const FacebookIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-    <path d="M14 8h3V4h-3a4 4 0 0 0-4 4v3H7v4h3v6h4v-6h3l1-4h-4V8z" />
-  </svg>
-);
+import Logo from './Logo.jsx';
+import { FacebookIcon, InstagramIcon, MailIcon, TiktokIcon } from './Icons.jsx';
 
 export default function Footer() {
-  const { t, dir } = useI18n();
-  const [sent, setSent] = useState(false);
+  const { t, lang } = useI18n();
+  const [state, setState] = useState('idle');
+  const [email, setEmail] = useState('');
+
+  async function subscribe(e) {
+    e.preventDefault();
+    setState('busy');
+    try {
+      await api('/newsletter', { method: 'POST', body: { email, locale: lang } });
+      setState('done');
+    } catch {
+      setState('error');
+    }
+  }
+
   return (
     <footer className="footer" id="contact">
+      <div className="container footer__news">
+        <div>
+          <h2 className="h3">{t('footer.community')}</h2>
+          <p className="muted">{t('footer.communityText')}</p>
+        </div>
+        {state === 'done' ? <p className="notice notice--ok" role="status">{t('footer.thanks')}</p> : (
+          <form onSubmit={subscribe} className="inline-form">
+            <label htmlFor="nl-email" className="sr-only">{t('footer.email')}</label>
+            <input id="nl-email" type="email" required maxLength={200} value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t('footer.email')} />
+            <button className="btn btn--solid" disabled={state === 'busy'}>{t('footer.subscribe')}</button>
+            {state === 'error' && <p className="notice notice--err" role="alert">{t('err.generic')}</p>}
+          </form>
+        )}
+      </div>
       <div className="container footer__grid">
         <div>
-          <h4>{t('footer.shop')}</h4>
-          <a href="#home">{t('nav.home')}</a>
-          <a href="#colored">{t('nav.colored')}</a>
-          <a href="#daily">{t('nav.catalog')}</a>
-          <a href="#contact">{t('nav.contact')}</a>
-        </div>
-        <div>
-          <h4>{t('footer.connect')}</h4>
+          <Logo size="md" />
+          <p className="muted footer__tag">{t('hero.subtitle')}</p>
           <div className="socials">
-            <a href="#" aria-label="Facebook"><FacebookIcon /></a>
-            <a href="#" aria-label="Instagram"><InstagramIcon /></a>
-            <a href="#" aria-label="TikTok"><TiktokIcon /></a>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><InstagramIcon /></a>
+            <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" aria-label="TikTok"><TiktokIcon /></a>
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><FacebookIcon /></a>
           </div>
         </div>
-        <div className="footer__news">
-          <h4>{t('footer.community')}</h4>
-          {sent ? (
-            <p>{t('footer.thanks')}</p>
-          ) : (
-            <form onSubmit={(e) => { e.preventDefault(); setSent(true); }}>
-              <input type="email" placeholder={t('footer.email')} aria-label={t('footer.email')} required />
-              <button type="submit" aria-label={t('footer.subscribe')}>{dir === 'rtl' ? '←' : '→'}</button>
-            </form>
-          )}
+        <nav aria-label={t('footer.shop')}>
+          <h3 className="h5">{t('footer.shop')}</h3>
+          <Link to="/collections/new-arrivals">{t('nav.new')}</Link>
+          <Link to="/collections/abayas">{t('nav.abayas')}</Link>
+          <Link to="/collections/hijabs">{t('nav.hijabs')}</Link>
+          <Link to="/collections/khimars">{t('nav.khimars')}</Link>
+          <Link to="/collections/accessories">{t('nav.accessories')}</Link>
+          <Link to="/collections/sale">{t('nav.sale')}</Link>
+        </nav>
+        <nav aria-label={t('footer.help')}>
+          <h3 className="h5">{t('footer.help')}</h3>
+          <Link to="/track">{t('nav.track')}</Link>
+          <a href="#shipping">{t('footer.shipping')}</a>
+          <a href="#returns">{t('footer.refund')}</a>
+          <a href="#faq">{t('footer.faq')}</a>
+        </nav>
+        <div>
+          <h3 className="h5">{t('footer.contact')}</h3>
+          <a href="mailto:hello@lorim.nl" className="with-icon"><MailIcon /> hello@lorim.nl</a>
+          <p className="muted">{t('footer.contactLine')}</p>
         </div>
       </div>
       <div className="container footer__bottom">
         <span>© {new Date().getFullYear()} LORIM</span>
-        <nav>
-          <a href="#">{t('footer.privacy')}</a>
-          <a href="#">{t('footer.refund')}</a>
-          <a href="#">{t('footer.terms')}</a>
-          <a href="#">{t('footer.shipping')}</a>
+        <nav aria-label="Legal">
+          <a href="#privacy">{t('footer.privacy')}</a>
+          <a href="#terms">{t('footer.terms')}</a>
+          <a href="#returns">{t('footer.refund')}</a>
+          <a href="#shipping">{t('footer.shipping')}</a>
         </nav>
       </div>
     </footer>

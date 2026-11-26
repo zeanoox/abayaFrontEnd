@@ -65,3 +65,39 @@ export const SnapIcon = (p) => (
     <path d="M12 3c3 0 5 2.2 5 5v2.5l2 .8-1.8 1.4c.6 2 2.2 3 3.3 3.3-1 .9-2.6.8-3.2 1.6-.3.6-.2 1.4-.8 1.4-1 0-1.8-.6-3.2.1-.7.4-1 .9-1.3.9s-.6-.5-1.3-.9c-1.4-.7-2.2-.1-3.2-.1-.6 0-.5-.8-.8-1.4-.6-.8-2.2-.7-3.2-1.6 1.1-.3 2.7-1.3 3.3-3.3L5 11.3l2-.8V8c0-2.8 2-5 5-5z" />
   </svg>
 );
+export const ChevronDown = (p) => (
+  <svg {...base} width={16} height={16} {...p}><path d="m6 9 6 6 6-6" /></svg>
+);
+export const ChevronStart = (p) => (
+  <svg {...base} {...p} className={`flip-rtl ${p.className || ''}`}><path d="m15 6-6 6 6 6" /></svg>
+);
+export const ChevronEnd = (p) => (
+  <svg {...base} {...p} className={`flip-rtl ${p.className || ''}`}><path d="m9 6 6 6-6 6" /></svg>
+);
+export const ExpandIcon = (p) => (
+  <svg {...base} {...p}><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" /></svg>
+);
+export const FilterIcon = (p) => (
+  <svg {...base} width={18} height={18} {...p}><path d="M4 6h16M7 12h10M10 18h4" /></svg>
+);
+export const FacebookIcon = (p) => (
+  <svg {...base} width={20} height={20} {...p}><path d="M14 8h3V4h-3a4 4 0 0 0-4 4v3H7v4h3v6h4v-6h3l1-4h-4V8z" /></svg>
+);
+export const ReturnIcon = (p) => (
+  <svg {...base} width={34} height={34} {...p}><path d="M9 14 4 9l5-5" /><path d="M4 9h11a5 5 0 0 1 0 10h-3" /></svg>
+);
+export const StarIcon = (p) => (
+  <svg {...base} width={16} height={16} fill="currentColor" stroke="none" {...p}><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z" /></svg>
+);
+export const EyeIcon = (p) => (
+  <svg {...base} width={18} height={18} {...p}><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" /><circle cx="12" cy="12" r="3" /></svg>
+);
+export const TrashIcon = (p) => (
+  <svg {...base} width={18} height={18} {...p}><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13" /></svg>
+);
+export const CheckIcon = (p) => (
+  <svg {...base} {...p}><path d="m5 12 5 5 9-10" /></svg>
+);
+export const MailIcon = (p) => (
+  <svg {...base} width={18} height={18} {...p}><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3 7 9 6 9-6" /></svg>
+);
