@@ -30,8 +30,11 @@ export function collectionInputs() {
     descriptionHtml: `<p>${c.description.en}</p>`,
     metafields: [{ namespace: 'custom', key: 'lorim', type: 'json',
       value: JSON.stringify({ name: c.name, description: c.description, parent: c.parent || null, position: c.pos }) }],
-    ...(c.slug === 'new-arrivals' ? { ruleSet: { appliedDisjunctively: false, rules: [{ column: 'TAG', relation: 'EQUALS', condition: 'new' }] } } : {}),
-    ...(c.slug === 'sale' ? { ruleSet: { appliedDisjunctively: false, rules: [{ column: 'IS_PRICE_REDUCED', relation: 'IS_SET', condition: '' }] } } : {}),
+    // Smart collections: products tagged "new", and products with a compare-at price.
+    ...(c.slug === 'new-arrivals' ? { sources: [{ source: { title: 'Tagged new', inclusion: { matchType: 'ALL',
+      conditions: [{ productTag: { matchType: 'ANY', relation: 'TAGGED_WITH', values: ['new'] } }] } } }] } : {}),
+    ...(c.slug === 'sale' ? { sources: [{ source: { title: 'On sale', inclusion: { matchType: 'ALL',
+      conditions: [{ variantCompareAtPrice: { relation: 'IS_SET' } }] } } }] } : {}),
     ...(c.smart ? {} : { sortOrder: 'BEST_SELLING' }),
   }));
 }
@@ -155,7 +158,7 @@ async function main() {
         { i: { id: collectionIds[input.handle], title: input.title, descriptionHtml: input.descriptionHtml, metafields: input.metafields } });
       if (firstError(r)) throw firstError(r);
     } else {
-      const { collectionCreate: r } = await gql(`mutation($i: CollectionInput!) { collectionCreate(input: $i) { collection { id } userErrors { field message } } }`, { i: input });
+      const { collectionCreate: r } = await gql(`mutation($i: CollectionCreateInput!) { collectionCreate(collection: $i) { collection { id } userErrors { field message } } }`, { i: input });
       if (firstError(r)) throw firstError(r);
       collectionIds[input.handle] = r.collection.id;
     }

@@ -128,7 +128,7 @@ export default function VariantPicker({ product, color, onColorChange, compact =
         {!variant ? (missing ? t('pdp.choose', { what: missing }) : t('pdp.unavailable'))
           : soldOut ? t('pdp.soldOut')
             : variant.lowStock ? t('pdp.lowStock', { n: variant.available }) : t('pdp.inStock')}
-        {variant && <span className="stock__sku"> · {t('pdp.sku')} {variant.sku}</span>}
+        {variant?.sku && <span className="stock__sku"> · {t('pdp.sku')} {variant.sku}</span>}
       </p>
 
       <div className="picker__buy">

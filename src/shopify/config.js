@@ -2,7 +2,7 @@
 // Everything sellable (products, variants, prices, stock, collections, discount codes, checkout)
 // lives in Shopify; these are display helpers and fallbacks.
 
-const env = import.meta.env;
+const env = import.meta.env || globalThis.process?.env || {};
 
 export const SHOPIFY = {
   domain: (env.VITE_SHOPIFY_STORE_DOMAIN || '').replace(/^https?:\/\//, '').replace(/\/$/, ''),
