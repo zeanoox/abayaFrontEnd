@@ -1,9 +1,9 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { api } from '../api.js';
 
-// The cart lives on the server; the browser only keeps a random token so it survives refreshes and return visits.
+// The cart lives in Shopify; the browser only keeps the Shopify cart id so it survives refreshes and return visits.
 const CartContext = createContext(null);
-const KEY = 'lorim-cart-token';
+const KEY = 'lorim-shopify-cart';
 
 const readToken = () => { try { return localStorage.getItem(KEY); } catch { return null; } };
 const writeToken = (v) => { try { v ? localStorage.setItem(KEY, v) : localStorage.removeItem(KEY); } catch { /* ignore */ } };
@@ -73,8 +73,8 @@ export function CartProvider({ children }) {
       setOpen(true);
       return c;
     },
-    setQty: (itemId, quantity) => call(`/cart/items/${itemId}`, { method: 'PATCH', body: { quantity } }),
-    remove: (itemId) => call(`/cart/items/${itemId}`, { method: 'DELETE' }),
+    setQty: (itemId, quantity) => call(`/cart/items/${encodeURIComponent(itemId)}`, { method: 'PATCH', body: { quantity } }),
+    remove: (itemId) => call(`/cart/items/${encodeURIComponent(itemId)}`, { method: 'DELETE' }),
     applyCoupon: (code) => call('/cart/coupon', { method: 'POST', body: { code } }),
     removeCoupon: () => call('/cart/coupon', { method: 'DELETE' }),
   }), [cart, error, open, opts.country, refresh, call]);
