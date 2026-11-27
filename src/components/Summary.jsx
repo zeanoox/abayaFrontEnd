@@ -37,12 +37,15 @@ export function CouponForm() {
 export function Totals({ cart }) {
   const { t, price } = useI18n();
   return (
+    <>
     <dl className="totals">
       <div className="sum-row"><dt>{t('cart.subtotal')}</dt><dd>{price(cart.subtotal)}</dd></div>
       {cart.discount > 0 && <div className="sum-row sum-row--disc"><dt>{t('cart.discount')}{cart.coupon?.valid ? ` (${cart.coupon.code})` : ''}</dt><dd>−{price(cart.discount)}</dd></div>}
       <div className="sum-row"><dt>{t('cart.shipping')}</dt><dd>{cart.shipping ? (cart.shippingCost === 0 ? t('cart.free') : price(cart.shippingCost)) : '—'}</dd></div>
       <div className="sum-row sum-row--total"><dt>{t('cart.total')}</dt><dd>{price(cart.total)}</dd></div>
     </dl>
+    {cart.shippingCost > 0 && <p className="muted small">{t('co.shipNote')}</p>}
+    </>
   );
 }
 

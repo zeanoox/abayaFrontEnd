@@ -78,7 +78,7 @@ export default function Checkout() {
           expectedTotal: c.total,
         },
       });
-      window.location.assign(res.checkoutUrl); // off to Mollie
+      window.location.assign(res.checkoutUrl); // off to Shopify checkout
     } catch (err) {
       setBusy(false);
       if (err.code === 'VALIDATION') {
